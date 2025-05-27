@@ -3,3 +3,4 @@ python-dotenv==1.0.1
 phidata==2.7.10
 groq==0.18.0
 googlesearch-python
+pycountry
