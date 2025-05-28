@@ -6,6 +6,7 @@ from telegram import (
     Update,
     InlineKeyboardButton,
     InlineKeyboardMarkup,
+    Bot
 )
 from telegram.ext import (
     Application,
@@ -26,6 +27,10 @@ load_dotenv()
 
 TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+
+bot = Bot(token=TOKEN)
+
+bot.delete_webhook()
 
 
 ##############################
