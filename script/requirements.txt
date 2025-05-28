@@ -4,3 +4,4 @@ phidata==2.7.10
 groq==0.18.0
 googlesearch-python
 pycountry
+flask
