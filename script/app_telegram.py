@@ -1,5 +1,7 @@
 import os
 import re
+from flask import Flask
+import threading
 from telegram import (
     Update,
     InlineKeyboardButton,
@@ -24,6 +26,23 @@ load_dotenv()
 
 TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+
+
+##############################
+# GAMBIARRA PRA RODAR NO RENDER
+##############################
+app = Flask('')
+
+@app.route('/')
+def home():
+    return "✅ Bot da Sarah está rodando!"
+
+def run():
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
+
+def keep_alive():
+    t = threading.Thread(target=run)
+    t.start()
 
 
 ##############################
@@ -97,7 +116,6 @@ def clean_response(text: str) -> str:
 
 
 def get_send_function(update: Update):
-    """Retorna a função correta para enviar mensagens."""
     if update.message:
         return update.message.reply_text
     elif update.callback_query:
@@ -191,7 +209,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         return
 
     book_query = update.message.text
-    context.user_data['last_book'] = book_query  # Salva o último livro pesquisado
+    context.user_data['last_book'] = book_query
 
     if action == 'diagnostico':
         await process_diagnostico(update, context, book_query)
@@ -256,19 +274,17 @@ async def process_recommendation(update: Update, context: CallbackContext, book_
 ##############################
 
 def main() -> None:
+    keep_alive()  # Ativa a gambiarra para manter o Render feliz
+
     application = Application.builder().token(TOKEN).build()
 
-    # Handlers de comandos
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("ajuda", start))
 
-    # Handlers de botões
     application.add_handler(CallbackQueryHandler(handle_buttons))
 
-    # Handler para mensagens de texto (entrada de livros)
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
-    # Executa o bot
     application.run_polling()
 
 
